@@ -7,6 +7,7 @@ import MoreStories from "../../components/more-stories";
 import PostBody from "../../components/post-body";
 import PostHeader from "../../components/post-header";
 import SectionSeparator from "../../components/section-separator";
+import RelatedPosts from "../../components/related-posts";
 import { request } from "../../lib/datocms";
 import { metaTagsFragment, responsiveImageFragment } from "../../lib/fragments";
 
@@ -63,6 +64,22 @@ export async function getStaticProps({ params, preview = false }) {
               url(imgixParams: {fm: jpg, fit: crop, w: 100, h: 100, sat: -100})
             }
           }
+          relatedPosts {
+            id
+            title
+            slug
+            author {
+              name
+              picture {
+                responsiveImage {
+                  alt
+                  base64
+                  bgColor
+                  title
+                }
+              }
+            }
+          }
         }
 
         morePosts: allPosts(orderBy: date_DESC, first: 2, filter: {slug: {neq: $slug}}) {
@@ -82,6 +99,7 @@ export async function getStaticProps({ params, preview = false }) {
             }
           }
         }
+        
       }
 
       ${responsiveImageFragment}
@@ -131,6 +149,7 @@ export default function Post({ subscription, preview }) {
           <PostBody content={post.content} />
         </article>
         <SectionSeparator />
+        {post.relatedPosts.length > 0 && <RelatedPosts posts={post.relatedPosts} />}
         {morePosts.length > 0 && <MoreStories posts={morePosts} />}
       </Container>
     </Layout>
